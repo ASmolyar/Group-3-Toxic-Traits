@@ -2,6 +2,20 @@ import React, { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import { CardMedia } from '@mui/material';
+
+import roshanPic from '../images/roshan-pic.png';
+
+/*
+
+<CardMedia
+          component="img"
+          alt="roshan picture"
+          height="300"
+          image={roshanPic}
+        />
+
+*/
 
 const names = ["Aaron Smolyar", "Roshan Bellary", "Ayush Tripathi", "Aditi Ghosh"];
 
