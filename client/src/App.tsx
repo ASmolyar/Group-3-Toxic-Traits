@@ -22,6 +22,7 @@ import EmailResetPasswordPage from './Authentication/EmailResetPasswordPage';
 import ResetPasswordPage from './Authentication/ResetPasswordPage';
 import AlertPopup from './components/AlertPopup';
 import InviteRegisterPage from './Authentication/InviteRegisterPage';
+import TraitsCards from './Home/Traits';
 
 function App() {
   return (
@@ -35,12 +36,15 @@ function App() {
                 <Routes>
                   {/* Routes accessed only if user is not authenticated */}
                   <Route element={<UnauthenticatedRoutesWrapper />}>
+
+                    <Route path="/traits" element={<TraitsCards/>} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route
                       path="/verify-account/:token"
                       element={<VerifyAccountPage />}
                     />
+                    
                     <Route
                       path="/email-reset"
                       element={<EmailResetPasswordPage />}
@@ -66,7 +70,8 @@ function App() {
                   <Route
                     path="/"
                     element={
-                      <DynamicRedirect unAuthPath="/login" authPath="/home" />
+                      <DynamicRedirect unAuthPath="/traits" authPath="/home" />
+                      //<DynamicRedirect unAuthPath="/login" authPath="/home" /> -- OLD CODE
                     }
                   />
 
@@ -81,5 +86,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
