@@ -36,15 +36,13 @@ function App() {
                 <Routes>
                   {/* Routes accessed only if user is not authenticated */}
                   <Route element={<UnauthenticatedRoutesWrapper />}>
-
-                    <Route path="/traits" element={<TraitsCards/>} />
+                    <Route path="/traits" element={<TraitsCards />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route
                       path="/verify-account/:token"
                       element={<VerifyAccountPage />}
                     />
-                    
                     <Route
                       path="/email-reset"
                       element={<EmailResetPasswordPage />}
@@ -71,10 +69,9 @@ function App() {
                     path="/"
                     element={
                       <DynamicRedirect unAuthPath="/traits" authPath="/home" />
-                      //<DynamicRedirect unAuthPath="/login" authPath="/home" /> -- OLD CODE
+                      // <DynamicRedirect unAuthPath="/login" authPath="/home" /> -- OLD CODE
                     }
                   />
-
                   {/* Route which is accessed if no other route is matched */}
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>

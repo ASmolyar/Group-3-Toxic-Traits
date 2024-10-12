@@ -42,9 +42,9 @@ const traits = [
                 
 /*Aditi*/    [
                 "Doesn't show up to bootcamp",
-                "",
-                "",
-                "",
+                "Is late to everything",
+                "Is always distracted",
+                "Is a CIS major from the Bay",
                 ""]
 ]
 
