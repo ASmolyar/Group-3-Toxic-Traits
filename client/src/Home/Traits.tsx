@@ -1,7 +1,7 @@
 /* eslint-disable react/function-component-definition */
 /* eslint-disable react/no-array-index-key */
-import React, { useState } from 'react';
-import Card from '@mui/material/Card';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -56,6 +56,7 @@ interface TraitsCardProps {
 }
 
 const TraitsCards: React.FC = () => {
+
   const [people, setPeople] = useState([
     'Aaron Smolyar',
     'Aditi Ghosh',
@@ -301,10 +302,11 @@ const TraitsCards: React.FC = () => {
     setExpanded(expanded === index ? null : index);
   };
 
-  const addPerson = (name: string, traits: string[]) => {
+  const addPerson = async (name: string, traits: string[]) => {
     setPeople([...people, name]);
     setAllTraits([...allTraits, traits]);
   };
+
 
   const deletePerson = (index: number) => {
     const newPeople = people.filter((_, i) => i !== index);
