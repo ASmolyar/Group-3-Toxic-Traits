@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const { name, image, trait } = req.body;
-  const newTrait = await addTrait(name, image, trait);
+  const newTrait = await addTrait(name, trait);
   res.json(newTrait);
 });
 

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const traitSchema = new mongoose.Schema({
-  name: String,
-  image: {data: Buffer, contentType: String},
-  trait: [{type: String}],
+  name: {type: String},
+  image: {type: String},
+  traits: {type: Array},
 });
 
 const Trait = mongoose.model('Trait', traitSchema);
