@@ -1,12 +1,18 @@
 import express from 'express';
-import { getAllTraits, createPerson, addTrait } from '../services/trait.service';
+import {
+  getAllTraits,
+  createPerson,
+  addTrait,
+  removePerson,
+  removeTrait,
+} from '../services/trait.service';
 import ApiError from '../util/apiError';
 import StatusCode from '../util/statusCode';
 
 export const getTraits = async (
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) => {
   try {
     const traits = await getAllTraits();
@@ -19,7 +25,7 @@ export const getTraits = async (
 export const createNewPerson = async (
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) => {
   const { name, image, traits } = req.body;
   if (!name || !image || !traits) {
@@ -37,7 +43,7 @@ export const createNewPerson = async (
 export const addNewTrait = async (
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) => {
   const { name, trait } = req.body;
   if (!name || !trait) {
@@ -46,6 +52,46 @@ export const addNewTrait = async (
   }
   try {
     const updatedTraits = await addTrait(name, trait);
+    if (updatedTraits) {
+      res.status(StatusCode.OK).json(updatedTraits);
+    } else {
+      next(ApiError.notFound('Person not found'));
+    }
+  } catch (error) {
+    next(ApiError.internal('Unable to add new trait'));
+  }
+};
+
+export const removeOldPerson = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const { name } = req.body;
+  if (!name) {
+    next(ApiError.missingFields(['name']));
+    return;
+  }
+  try {
+    const deletedPerson = await removePerson(name);
+    res.status(StatusCode.CREATED).json(deletedPerson);
+  } catch (error) {
+    next(ApiError.internal('Unable to create new person'));
+  }
+};
+
+export const removeOldTrait = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  const { name, trait } = req.body;
+  if (!name || !trait) {
+    next(ApiError.missingFields(['name', 'trait']));
+    return;
+  }
+  try {
+    const updatedTraits = await removeTrait(name, trait);
     if (updatedTraits) {
       res.status(StatusCode.OK).json(updatedTraits);
     } else {

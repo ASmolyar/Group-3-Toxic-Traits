@@ -1,7 +1,8 @@
 /* eslint-disable react/function-component-definition */
 /* eslint-disable react/no-array-index-key */
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';import Card from '@mui/material/Card';
+import axios from 'axios';
+import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -42,7 +43,7 @@ const Header: React.FC = () => (
     </Toolbar>
   </AppBar>
 );
-
+/*
 const images = [
   '/images/aaron-pic.png',
   '/images/aditi-pic.png',
@@ -50,12 +51,6 @@ const images = [
   '/images/roshan-pic.png',
 ];
 
-interface TraitsCardProps {
-  name: string;
-  traits: string[];
-}
-
-const TraitsCards: React.FC = () => {
 
   const [people, setPeople] = useState([
     'Aaron Smolyar',
@@ -292,47 +287,17 @@ const TraitsCards: React.FC = () => {
       "Wants to 'find himself,' can’t find his keys.",
       'Posts motivational quotes, takes a nap right after.',
     ],
-  ]);
-  const [expanded, setExpanded] = useState<number | null>(null);
-  const [newName, setNewName] = useState('');
-  const [newTraitss, setNewTraitss] = useState('');
-  const [newTrait, setNewTrait] = useState('');
+    */
 
+const TraitsCards: React.FC = () => {
+  const [expanded, setExpanded] = useState<number | null>(null);
   const handleExpandClick = (index: number) => {
     setExpanded(expanded === index ? null : index);
   };
-
-  const addPerson = async (name: string, traits: string[]) => {
-    setPeople([...people, name]);
-    setAllTraits([...allTraits, traits]);
-  };
-
-
-  const deletePerson = (index: number) => {
-    const newPeople = people.filter((_, i) => i !== index);
-    const newTraits = allTraits.filter((_, i) => i !== index);
-    setPeople(newPeople);
-    setAllTraits(newTraits);
-  };
-
-  const addTrait = (index: number, trait: string) => {
-    const updatedTraits = [...allTraits];
-    updatedTraits[index] = [...updatedTraits[index], trait];
-    setAllTraits(updatedTraits);
-  };
-
-  const deleteTrait = (personIndex: number, traitIndex: number) => {
-    const updatedTraits = [...allTraits];
-    updatedTraits[personIndex] = updatedTraits[personIndex].filter(
-      (_, i) => i !== traitIndex,
-    );
-    setAllTraits(updatedTraits);
-  };
-
   const [hoveredTraitIndex, setHoveredTraitIndex] = useState<number | null>(
     null,
   );
-
+ const people = 
   return (
     <Grid
       container

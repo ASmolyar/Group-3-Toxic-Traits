@@ -1,17 +1,22 @@
 import express from 'express';
-import { getAllTraits, addTrait } from '../services/trait.service';
+import {
+  getTraits,
+  addNewTrait,
+  createNewPerson,
+  removeOldPerson,
+  removeOldTrait,
+} from '../controllers/trait.controller';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  const traits = await getAllTraits();
-  res.json(traits);
-});
+router.get('/getAll', getTraits);
 
-router.post('/', async (req, res) => {
-  const { name, image, trait } = req.body;
-  const newTrait = await addTrait(name, trait);
-  res.json(newTrait);
-});
+router.post('/newTrait', addNewTrait);
+
+router.post('/newPerson', createNewPerson);
+
+router.post('/removePerson', removeOldPerson);
+
+router.post('/removePeron', removeOldTrait);
 
 export default router;
