@@ -1,20 +1,24 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const cors = require('cors');
-const Person = require('./models/Person');
-
+import express from 'express';
+import mongoose from 'mongoose';
+import multer from 'multer';
+import cors from 'cors';
+import Person from './models/Person';
 // Initialize Express
 const app = express();
-app.use(cors());
+
+// Enable CORS
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 
 // Connect to MongoDB
 mongoose
-  .connect('mongodb://localhost:27017/your-db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(
+    'mongodb+srv://group3h4i:admin12345@cluster0.vtr8h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    },
+  )
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error(err));
 
@@ -27,7 +31,7 @@ app.use('/uploads', express.static('uploads'));
 // Routes
 
 // Get all people
-app.get('/people', async (req, res) => {
+app.get('/getAll', async (req, res) => {
   try {
     const people = await Person.find();
     res.json(people);
@@ -37,7 +41,7 @@ app.get('/people', async (req, res) => {
 });
 
 // Add a new person
-app.post('/people', upload.single('photo'), async (req, res) => {
+app.post('/newPerson', upload.single('photo'), async (req, res) => {
   const { name, traits } = req.body;
   const photo = req.file ? `/uploads/${req.file.filename}` : '';
 
@@ -55,30 +59,50 @@ app.post('/people', upload.single('photo'), async (req, res) => {
 });
 
 // Delete a person
-app.delete('/people/:id', async (req, res) => {
+app.post('/removePerson', async (req, res) => {
+  const { name } = req.body;
   try {
-    await Person.findByIdAndDelete(req.params.id);
+    await Person.deleteOne({ name });
     res.json({ message: 'Person deleted' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete person' });
   }
 });
 
-// Update traits of a person
-app.put('/people/:id', async (req, res) => {
-  const { traits } = req.body;
+// Add a new trait
+app.post('/newTrait', async (req, res) => {
+  const { name, trait } = req.body;
   try {
-    const updatedPerson = await Person.findByIdAndUpdate(
-      req.params.id,
-      { traits },
-      { new: true },
-    );
-    res.json(updatedPerson);
+    const person = await Person.findOne({ name });
+    if (person) {
+      person.traits.push(trait);
+      await person.save();
+      res.json(person);
+    } else {
+      res.status(404).json({ error: 'Person not found' });
+    }
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update person traits' });
+    res.status(500).json({ error: 'Failed to add trait' });
+  }
+});
+
+// Remove a trait
+app.post('/removeTrait', async (req, res) => {
+  const { name, trait } = req.body;
+  try {
+    const person = await Person.findOne({ name });
+    if (person) {
+      person.traits = person.traits.filter((t) => t !== trait);
+      await person.save();
+      res.json(person);
+    } else {
+      res.status(404).json({ error: 'Person not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to remove trait' });
   }
 });
 
 // Start the server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

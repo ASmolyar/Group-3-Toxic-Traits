@@ -17,6 +17,6 @@ router.post('/newPerson', createNewPerson);
 
 router.post('/removePerson', removeOldPerson);
 
-router.post('/removePeron', removeOldTrait);
+router.post('/removeTrait', removeOldTrait);
 
 export default router;
