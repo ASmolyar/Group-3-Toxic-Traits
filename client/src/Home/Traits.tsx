@@ -25,6 +25,7 @@ interface Person {
 function TraitsCards(): JSX.Element {
   const [people, setPeople] = useState<Person[]>([]);
   const [newName, setNewName] = useState('');
+  const [photo, setPhoto] = useState('');
   const [newTraitss, setNewTraitss] = useState('');
   const [expanded, setExpanded] = useState<number | null>(null);
   const [hoveredTraitIndex, setHoveredTraitIndex] = useState<number | null>(
@@ -34,16 +35,20 @@ function TraitsCards(): JSX.Element {
 
   const fetchPeople = async () => {
     try {
-      const res = await axios.get('http://localhost:4000/getAll');
+      const res = await axios.get('http://localhost:4000/api/trait/getAll');
       setPeople(res.data);
     } catch (error) {
       console.error('Error fetching people:', error);
     }
   };
 
-  const addPerson = async (name: string, traits: string[]) => {
+  const addPerson = async (name: string, image: string, traits: string[]) => {
     try {
-      await axios.post('http://localhost:4000/newPerson', { name, traits });
+      await axios.post('http://localhost:4000/api/trait/newPerson', {
+        name,
+        image,
+        traits,
+      });
       fetchPeople();
     } catch (error) {
       console.error('Error adding person:', error);
@@ -53,7 +58,7 @@ function TraitsCards(): JSX.Element {
   const deletePerson = async (index: number) => {
     try {
       const person = people[index];
-      await axios.post('http://localhost:4000/removePerson', {
+      await axios.post('http://localhost:4000/api/trait/removePerson', {
         name: person.name,
       });
       fetchPeople();
@@ -65,7 +70,7 @@ function TraitsCards(): JSX.Element {
   const addTrait = async (index: number, newestTrait: string) => {
     try {
       const person = people[index];
-      await axios.post('http://localhost:4000/newTrait', {
+      await axios.post('http://localhost:4000/api/trait/newTrait', {
         name: person.name,
         trait: newestTrait,
       });
@@ -75,11 +80,11 @@ function TraitsCards(): JSX.Element {
     }
   };
 
-  const deleteTrait = async (personIndex: number, traitIndex: number) => {
+  const deleteTrait = async (index: number, traitIndex: number) => {
     try {
-      const person = people[personIndex];
+      const person = people[index];
       const trait = person.traits[traitIndex];
-      await axios.post('http://localhost:4000/removeTrait', {
+      await axios.post('http://localhost:4000/api/trait/removeTrait', {
         name: person.name,
         trait,
       });
@@ -197,11 +202,19 @@ function TraitsCards(): JSX.Element {
         />
         <input
           type="text"
+          placeholder="Link to Photo"
+          value={photo}
+          onChange={(e) => setPhoto(e.target.value)}
+        />
+        <input
+          type="text"
           placeholder="New Traits (comma-separated)"
           value={newTraitss}
           onChange={(e) => setNewTraitss(e.target.value)}
         />
-        <Button onClick={() => addPerson(newName, newTraitss.split(','))}>
+        <Button
+          onClick={() => addPerson(newName, photo, newTraitss.split(','))}
+        >
           Add Person
         </Button>
       </Grid>
