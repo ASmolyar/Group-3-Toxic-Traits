@@ -28,12 +28,27 @@ export const createNewPerson = async (
   next: express.NextFunction,
 ) => {
   const { name, image, traits } = req.body;
-  if (!name || !image || !traits) {
-    next(ApiError.missingFields(['name', 'image', 'traits']));
-    return;
+
+  let tname = name;
+  let timage = image;
+  let ttraits = traits;
+
+  if (!name) {
+    tname = 'Diddy';
+  }
+  if (!image) {
+    timage =
+      'https://pbs.twimg.com/media/FhyubNmXkAIQPnh?format=jpg&name=large';
+  }
+  if (!traits || traits.length === 0 || traits[0].trim() === '') {
+    ttraits = [
+      '3 inch shalongongongongong',
+      'Cosplays as Roshan',
+      'American dream = stock up on baby oil',
+    ];
   }
   try {
-    const newPerson = await createPerson(name, image, traits);
+    const newPerson = await createPerson(tname, timage, ttraits);
     res.status(StatusCode.CREATED).json(newPerson);
   } catch (error) {
     next(ApiError.internal('Unable to create new person'));
@@ -98,6 +113,6 @@ export const removeOldTrait = async (
       next(ApiError.notFound('Person not found'));
     }
   } catch (error) {
-    next(ApiError.internal('Unable to add new trait'));
+    next(ApiError.internal('Unable to remove new trait'));
   }
 };

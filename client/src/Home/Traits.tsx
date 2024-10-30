@@ -19,7 +19,7 @@ const darkTheme = createTheme({
 interface Person {
   name: string;
   traits: string[];
-  photo?: string;
+  image?: string;
 }
 
 function TraitsCards(): JSX.Element {
@@ -44,6 +44,7 @@ function TraitsCards(): JSX.Element {
 
   const addPerson = async (name: string, image: string, traits: string[]) => {
     try {
+      console.log(traits);
       await axios.post('http://localhost:4000/api/trait/newPerson', {
         name,
         image,
@@ -55,9 +56,8 @@ function TraitsCards(): JSX.Element {
     }
   };
 
-  const deletePerson = async (index: number) => {
+  const deletePerson = async (person: Person) => {
     try {
-      const person = people[index];
       await axios.post('http://localhost:4000/api/trait/removePerson', {
         name: person.name,
       });
@@ -67,9 +67,8 @@ function TraitsCards(): JSX.Element {
     }
   };
 
-  const addTrait = async (index: number, newestTrait: string) => {
+  const addTrait = async (person: Person, newestTrait: string) => {
     try {
-      const person = people[index];
       await axios.post('http://localhost:4000/api/trait/newTrait', {
         name: person.name,
         trait: newestTrait,
@@ -80,15 +79,21 @@ function TraitsCards(): JSX.Element {
     }
   };
 
-  const deleteTrait = async (index: number, traitIndex: number) => {
+  const deleteTrait = async (person: Person, traitIndex: number) => {
     try {
-      const person = people[index];
       const trait = person.traits[traitIndex];
-      await axios.post('http://localhost:4000/api/trait/removeTrait', {
-        name: person.name,
-        trait,
-      });
-      fetchPeople();
+      console.log(`Deleting trait: ${trait} for person: ${person.name}`);
+
+      const response = await axios.post(
+        'http://localhost:4000/api/trait/removeTrait',
+        {
+          name: person.name,
+          trait,
+        },
+      );
+      console.log('Delete response:', response);
+
+      fetchPeople(); // Refresh the list after deletion
     } catch (error) {
       console.error('Error deleting trait:', error);
     }
@@ -103,122 +108,134 @@ function TraitsCards(): JSX.Element {
   }, []);
 
   return (
-    <Grid
-      container
-      columnSpacing={4}
-      rowSpacing={4}
-      justifyContent="center"
-      sx={{
-        paddingTop: 10,
-        paddingBottom: 10,
-        paddingLeft: 5,
-        paddingRight: 5,
-      }}
-    >
-      {people.map((person, index) => (
-        <Grid item xs={12} sm={3} key={person.name}>
-          {' '}
-          {/* Use person.name as the key */}
-          <Card
-            variant="outlined"
-            sx={{
-              borderRadius: '16px',
-              maxWidth: 400,
-              objectFit: 'contain',
-              border: '3px solid #FAFAFA',
-            }}
-          >
-            <Typography
-              variant="h4"
-              component="div"
-              sx={{ flexGrow: 1, textAlign: 'center' }}
+    <>
+      <Typography
+        variant="h2"
+        component="h1"
+        align="center"
+        sx={{ margin: 4, color: '#FFA726' }}
+      >
+        Toxic Traits
+      </Typography>
+      <Grid
+        container
+        columnSpacing={4}
+        rowSpacing={4}
+        justifyContent="center"
+        sx={{
+          paddingTop: 10,
+          paddingBottom: 10,
+          paddingLeft: 5,
+          paddingRight: 5,
+        }}
+      >
+        {people.map((person, index) => (
+          <Grid item xs={12} sm={3} key={person.name}>
+            {' '}
+            {/* Use person.name as the key */}
+            <Card
+              variant="outlined"
+              sx={{
+                borderRadius: '16px',
+                maxWidth: 400,
+                objectFit: 'contain',
+                border: '3px solid #FAFAFA',
+              }}
             >
-              {person.name}
-            </Typography>
-            <CardMedia
-              sx={{ width: '100%', height: 400, objectFit: 'cover' }}
-              image={person.photo || '/default-image.png'}
-              title={person.name}
-            />
-            <CardActions>
-              <Button onClick={() => handleExpandClick(index)}>
-                {expanded === index ? 'Hide Traits' : 'Show Traits'}
-              </Button>
-              <Button onClick={() => deletePerson(index)}>Delete Person</Button>
-            </CardActions>
-            <Collapse in={expanded === index} timeout="auto" unmountOnExit>
-              <CardContent>
-                <Typography variant="h5" color="white">
-                  <b>Traits:</b>
-                </Typography>
-                <ul>
-                  {person.traits.map((trait, traitIndex) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <li key={traitIndex} style={{ listStyleType: 'disc' }}>
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onMouseEnter={() => setHoveredTraitIndex(traitIndex)}
-                        onMouseLeave={() => setHoveredTraitIndex(null)}
-                        onClick={() => deleteTrait(index, traitIndex)}
-                        onKeyDown={(e) =>
-                          e.key === 'Enter' && deleteTrait(index, traitIndex)
-                        }
-                        style={{
-                          textDecoration:
-                            hoveredTraitIndex === traitIndex
-                              ? 'line-through'
-                              : 'none',
-                          cursor: 'pointer',
-                          display: 'inline',
-                        }}
-                      >
-                        <Typography variant="body2">{trait}</Typography>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <input
-                  type="text"
-                  placeholder="New Trait"
-                  value={newTrait}
-                  onChange={(e) => setNewTrait(e.target.value)}
-                />
-                <Button onClick={() => addTrait(index, newTrait)}>
-                  Add Trait
+              <Typography
+                variant="h4"
+                component="div"
+                sx={{ flexGrow: 1, textAlign: 'center' }}
+              >
+                {person.name}
+              </Typography>
+              <CardMedia
+                sx={{ width: '100%', height: 400, objectFit: 'cover' }}
+                image={person.image}
+                title={person.name}
+              />
+              <CardActions>
+                <Button onClick={() => handleExpandClick(index)}>
+                  {expanded === index ? 'Hide Traits' : 'Show Traits'}
                 </Button>
-              </CardContent>
-            </Collapse>
-          </Card>
+                <Button onClick={() => deletePerson(person)}>
+                  Delete Person
+                </Button>
+              </CardActions>
+              <Collapse in={expanded === index} timeout="auto" unmountOnExit>
+                <CardContent>
+                  <Typography variant="h5" color="white">
+                    <b>Traits:</b>
+                  </Typography>
+                  <ul>
+                    {person.traits.map((trait, traitIndex) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <li key={traitIndex} style={{ listStyleType: 'disc' }}>
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onMouseEnter={() => setHoveredTraitIndex(traitIndex)}
+                          onMouseLeave={() => setHoveredTraitIndex(null)}
+                          onClick={() => deleteTrait(person, traitIndex)}
+                          onKeyDown={(e) =>
+                            e.key === 'Enter' && deleteTrait(person, traitIndex)
+                          }
+                          style={{
+                            textDecoration:
+                              hoveredTraitIndex === traitIndex
+                                ? 'line-through'
+                                : 'none',
+                            cursor: 'pointer',
+                            display: 'inline',
+                          }}
+                        >
+                          <Typography variant="body2">{trait}</Typography>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <input
+                    type="text"
+                    placeholder="New Trait"
+                    value={newTrait}
+                    onChange={(e) => setNewTrait(e.target.value)}
+                  />
+                  <Button onClick={() => addTrait(person, newTrait)}>
+                    Add Trait
+                  </Button>
+                </CardContent>
+              </Collapse>
+            </Card>
+          </Grid>
+        ))}
+        {/* Add Person Form */}
+        <Grid item xs={12} sm={6}>
+          <input
+            type="text"
+            placeholder="New Name"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Link to Photo"
+            value={photo}
+            onChange={(e) => setPhoto(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="New Traits (comma-separated)"
+            value={newTraitss}
+            onChange={(e) => setNewTraitss(e.target.value)}
+          />
+          <Button
+            onClick={() => addPerson(newName, photo, newTraitss.split(','))}
+          >
+            Add Person
+          </Button>
         </Grid>
-      ))}
-      {/* Add Person Form */}
-      <Grid item xs={12} sm={6}>
-        <input
-          type="text"
-          placeholder="New Name"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Link to Photo"
-          value={photo}
-          onChange={(e) => setPhoto(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="New Traits (comma-separated)"
-          value={newTraitss}
-          onChange={(e) => setNewTraitss(e.target.value)}
-        />
-        <Button
-          onClick={() => addPerson(newName, photo, newTraitss.split(','))}
-        >
-          Add Person
-        </Button>
       </Grid>
-    </Grid>
+    </>
   );
 }
 

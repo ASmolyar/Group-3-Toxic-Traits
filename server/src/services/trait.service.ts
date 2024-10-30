@@ -33,11 +33,16 @@ export const removePerson = async (name: { type: string }) => {
   return traits;
 };
 
-export const removeTrait = async (name: { type: string }, traitind: number) => {
+export const removeTrait = async (name: { type: string }, trait: string) => {
   const person = await Trait.findOne({ name }).exec();
-  if (person) {
+
+  const traitind = person?.traits.indexOf(trait);
+
+  if (person && traitind !== undefined) {
     person.traits.splice(traitind, 1);
-    return person;
+    await person.save();
+
+    return person.traits;
   }
   return null;
 };
